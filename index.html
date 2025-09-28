@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graymatter - Your CS Companion</title>
+    <!-- Link to your new external stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+        <!-- ADD THIS BUTTON -->
+    <button id="theme-switcher">🌙</button>
+
+    <!-- Pop-up menu for highlighted text -->
+    <div id="highlight-menu">
+        <button id="simplify-btn">Simplify</button>
+        <button id="example-btn">Example</button>
+    </div>
+    
+    <!-- Modal for showing AI-generated analogy -->
+    <div class="modal-overlay" id="analogy-modal">
+        <div class="modal-content">
+            <button id="modal-close-btn">&times;</button>
+            <h3 id="modal-title">Here's a simpler way to think about it...</h3>
+            <p id="modal-body">
+                This is a placeholder for the AI generated content. Your personalized analogy will appear here!
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+<header>
+    <div class="logo-title-container">
+        <h1>Graymatter</h1>
+        <img src="./test.png" alt="Graymatter Logo">
+    </div>
+</header>
+
+        <main>
+            <!-- SAMPLE BLOG 1 -->
+            <article class="blog-post">
+                <h2>Data Structures: Stack vs. Queue</h2>
+                <div class="blog-content">
+                    <p>When learning data structures, two of the most fundamental concepts you'll encounter are Stacks and Queues. Both are linear data structures that store items in a sequential order, but they differ in how you access those items.</p>
+                    <p>A Stack follows a Last-In, First-Out (LIFO) principle. This means the last element added to the stack will be the first one to be removed. Think of it as a pile of plates; you add a new plate to the top, and when you need a plate, you also take it from the top.</p>
+                    <p>On the other hand, a Queue follows the First-In, First-Out (FIFO) principle. This is just like a real-world queue or line. For practice, solve the "Implement Queue using Stacks" problem on <a href="https://leetcode.com/problems/implement-queue-using-stacks/" target="_blank">LeetCode</a>.</p>
+                </div>
+            </article>
+
+            <!-- SAMPLE BLOG 2 -->
+            <article class="blog-post">
+                <h2>Algorithms: Understanding Big O Notation</h2>
+                <div class="blog-content">
+                    <p>Big O notation is a mathematical notation that describes the limiting behavior of a function when the argument tends towards a particular value or infinity. In computer science, it's used to classify algorithms according to how their run time or space requirements grow as the input size grows.</p>
+                    <p>Essentially, Big O notation is not about measuring the exact speed of an algorithm, but rather about understanding its scalability. It answers the question: "If I double the number of inputs to my algorithm, how much longer will it take to run?" For example, an O(n) algorithm's runtime grows linearly with the input size 'n'.</p>
+                    <p>Understanding Big O is crucial for writing efficient code. It helps developers make informed decisions about which algorithm to use for a specific problem, especially when dealing with large datasets where performance differences become significant.</p>
+                </div>
+            </article>
+
+            <!-- IMAGE UPLOAD AND VIEW FEATURE -->
+            <section class="progress-tracker">
+                <h3>Track Your Progress</h3>
+                <p style="color: var(--gray-text); margin-bottom: 20px;">Solved a problem? Upload a screenshot of your 'Accepted' solution to build your visual logbook.</p>
+                <label for="imageUpload" class="file-upload-label">Upload Screenshot</label>
+                <input type="file" id="imageUpload" accept="image/*">
+                
+                <div id="image-gallery">
+                    <!-- Uploaded images will appear here -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <!-- ... a lot of HTML ... -->
+    </main>
+</div>
+    <!-- REPLACE your old script tag with this new one -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Elements ---
+            const themeSwitcher = document.getElementById('theme-switcher');
+            const body = document.body;
+            // ... (rest of the element selections are the same)
+            const highlightMenu = document.getElementById('highlight-menu');
+            const simplifyBtn = document.getElementById('simplify-btn');
+            const exampleBtn = document.getElementById('example-btn');
+            const modalOverlay = document.getElementById('analogy-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const imageUpload = document.getElementById('imageUpload');
+            const imageGallery = document.getElementById('image-gallery');
+            
+            let selectedText = '';
+
+            // --- THEME SWITCHER LOGIC (UPDATED) ---
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    body.classList.add('dark-theme');
+                    themeSwitcher.textContent = '☀️'; // In dark mode, show sun to switch to light
+                } else {
+                    body.classList.remove('dark-theme');
+                    themeSwitcher.textContent = '🌙'; // In light mode, show moon to switch to dark
+                }
+            };
+            
+            // On page load, check for saved theme. Default is now 'light'.
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+
+            themeSwitcher.addEventListener('click', () => {
+                const isDark = body.classList.contains('dark-theme');
+                const newTheme = isDark ? 'light' : 'dark';
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+
+
+            // --- TEXT HIGHLIGHTING LOGIC (Unchanged) ---
+            document.addEventListener('mouseup', (e) => {
+                setTimeout(() => {
+                    const selection = window.getSelection();
+                    const text = selection.toString().trim();
+                    if (text.length > 0 && e.target.closest('.blog-content')) {
+                        selectedText = text;
+                        const range = selection.getRangeAt(0);
+                        const rect = range.getBoundingClientRect();
+                        highlightMenu.style.display = 'flex';
+                        highlightMenu.style.top = `${window.scrollY + rect.top - highlightMenu.offsetHeight - 10}px`;
+                        highlightMenu.style.left = `${window.scrollX + rect.left + (rect.width / 2) - (highlightMenu.offsetWidth / 2)}px`;
+                    } else if (!highlightMenu.contains(e.target)) {
+                        highlightMenu.style.display = 'none';
+                    }
+                }, 10);
+            });
+
+            document.addEventListener('mousedown', (e) => {
+                if (!highlightMenu.contains(e.target)) {
+                     highlightMenu.style.display = 'none';
+                }
+            });
+
+            // --- MODAL & IMAGE UPLOAD LOGIC (Unchanged) ---
+            function showModal(type) {
+                console.log(`Sending to API: "${selectedText}"`);
+                if (type === 'simplify') {
+                    modalTitle.textContent = 'Simplified Concept';
+                    modalBody.textContent = `[AI Simulation]: Imagine you're explaining "${selectedText.substring(0, 50)}..." to a 10-year-old...`;
+                } else {
+                    modalTitle.textContent = 'Personalized Example';
+                    modalBody.textContent = `[AI Simulation]: Let's use your interest in *cooking*. To understand "${selectedText.substring(0, 50)}..."...`;
+                }
+                modalOverlay.style.display = 'flex';
+                highlightMenu.style.display = 'none';
+            }
+            function hideModal() { modalOverlay.style.display = 'none'; }
+            simplifyBtn.addEventListener('click', () => showModal('simplify'));
+            exampleBtn.addEventListener('click', () => showModal('example'));
+            modalCloseBtn.addEventListener('click', hideModal);
+            modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) hideModal(); });
+            imageUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imgContainer = document.createElement('div');
+                        imgContainer.className = 'img-container';
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = "Uploaded Solution";
+                        imgContainer.appendChild(img);
+                        imageGallery.appendChild(imgContainer);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

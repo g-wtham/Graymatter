@@ -1,0 +1,308 @@
+@font-face {
+    font-family: 'GT Walsheim Pro';
+    src: url('./GT-Walsheim-Regular-Trial-BF651b7fc71a47d.otf') format('opentype');
+    font-weight: 400; /* normal */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'GT Walsheim Pro';
+    src: url('./GT-Walsheim-Bold-Trial-BF651b7fc737c57.otf') format('opentype');
+    font-weight: 700; /* bold */
+    font-style: normal;
+}
+
+/* The DEFAULT theme is LIGHT */
+body.dark-theme {
+    --color-background: #fbfbfb;         /* Light gray background */
+    --color-text-primary: #212529;       /* Very dark gray for text */
+    --color-text-secondary: #000000;     /* Softer gray for paragraphs */
+    --color-accent-primary: #3722d3;      /* Vibrant violet for headings */
+    --color-accent-link: #3722d3;         /* Links also use the violet */
+    --color-card-background: #FFFFFF;    /* Cards are pure white */
+    --color-border: #000000;             /* Light gray for borders/lines */
+}
+
+/* The DARK theme overrides (Navy & Green) */
+:root {
+    --color-background: #002333;         /* Mapped from --dark-blue */
+    --color-text-primary: #f0f0f0;       /* Mapped from --light-text */
+    --color-text-secondary: #ffffff;     /* Mapped from --gray-text */
+    --color-accent-primary: #00ff84;      /* Mapped from --accent-green */
+    --color-accent-link: #00ff84;         /* Links should use the bright accent */
+    --color-card-background: #003750;    /* Mapped from --card-bg */
+    --color-border: #ffffff;             /* Borders match the card background */
+}
+
+/* --- Step 3: Global & Body Styles --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'GT Walsheim Pro', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    line-height: 1.7;
+    font-size: 16px; 
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+/* --- Step 4: Typography & Layout --- */
+header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+header h1 {
+    font-size: 4rem; /* 64px */
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+
+header p {
+    font-size: 1.25rem; /* 20px */
+    color: var(--color-text-secondary);
+}
+
+/* --- Step 4: Typography & Layout --- */
+
+/* ... (existing header rule) ... */
+
+header h1 {
+    font-size: 4rem;
+    color: var(--color-accent-primary);
+    font-weight: 700;
+    line-height: 1.1;
+    /* REMOVE the margin-bottom from here to prevent alignment issues */
+    margin: 0; 
+}
+
+/* ADD THIS NEW BLOCK */
+.logo-title-container {
+    display: flex;
+    justify-content: center; /* Horizontally center the group */
+    align-items: center;     /* Vertically align items in the middle */             /* Add some space between the title and logo */
+    margin-bottom: 8px;      /* Add the space that was on the h1 */
+}
+
+/* ADD THIS to control the logo size */
+.logo-title-container img {
+    width: 80px;
+    height: 80px;
+    margin-left: 20px;
+    display: block; /* Removes extra space below the image */
+}
+/* END of new block */
+
+
+/* ... (rest of your CSS) ... */
+
+h2 {
+    font-size: 2.75rem; /* 44px */
+    color: var(--color-accent-primary);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+h3 {
+    font-size: 1.8rem; /* 28.8px */
+    color: var(--color-text-primary);
+    margin-top: 40px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.blog-post {
+    margin-bottom: 60px;
+}
+
+.blog-content p {
+    font-size: 1.25rem; /* 20px */
+    margin-bottom: 1.75em;
+    color: var(--color-text-secondary);
+}
+
+a {
+    color: var(--color-accent-link);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- Step 5: Component Styles --- */
+
+/* Theme Switcher */
+#theme-switcher {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: var(--color-card-background);
+    color: var(--color-text-primary);
+    border: 2px solid var(--color-border);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+#theme-switcher:hover {
+    transform: scale(1.1);
+    border-color: var(--color-accent-primary);
+}
+
+/* Text Highlight Pop-up */
+#highlight-menu {
+    position: absolute;
+    background-color: var(--color-card-background);
+    border: 1px solid var(--color-accent-primary);
+    border-radius: 8px;
+    padding: 5px;
+    display: none;
+    gap: 5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+#highlight-menu button {
+    background-color: transparent;
+    color: var(--color-accent-primary);
+    border: 1px solid var(--color-accent-primary);
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    transition: all 0.2s ease-in-out;
+}
+
+#highlight-menu button:hover {
+    background-color: var(--color-accent-primary);
+    color: var(--color-background);
+}
+
+/* Analogy Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal-content {
+    background-color: var(--color-card-background);
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+#modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#modal-title {
+    color: var(--color-accent-primary);
+    margin-bottom: 15px;
+}
+
+#modal-body {
+    color: var(--color-text-primary);
+    font-style: italic;
+}
+
+/* Image Upload & View */
+.progress-tracker {
+    background-color: var(--color-card-background);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid var(--color-border);
+}
+
+.file-upload-label {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: var(--color-accent-primary);
+    color: var(--color-background);
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: transform 0.2s, background-color 0.3s ease;
+}
+.file-upload-label:hover {
+    transform: scale(1.05);
+}
+
+#imageUpload {
+    display: none;
+}
+
+#image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 30px;
+}
+
+#image-gallery .img-container {
+    width: 100%;
+    padding-top: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+#image-gallery img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+#image-gallery .img-container:hover img {
+    transform: scale(1.1);
+}
