@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graymatter - DSA Learning Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+        :root {
+            --color-background: #002333;
+            --color-text-primary: #f0f0f0;
+            --color-text-secondary: #a0c0d0;
+            --color-accent-primary: #00ff84;
+            --color-accent-link: #00ff84;
+            --color-card-background: #003750;
+            --color-border: #004f70;
+            --color-hover: #00cc6a;
+            --color-success: #00ff84;
+            --color-warn: #ffd93d;
+            --color-danger: #ff6b6b;
+        }
+
+        body.light-theme {
+            --color-background: #fbfbfb;
+            --color-text-primary: #212529;
+            --color-text-secondary: #5a646c;
+            --color-accent-primary: #3722d3;
+            --color-accent-link: #3722d3;
+            --color-card-background: #FFFFFF;
+            --color-border: #e0e0e0;
+            --color-hover: #2916a8;
+            --color-success: #28a745;
+            --color-warn: #ffc107;
+            --color-danger: #dc3545;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.7;
+            transition: all 0.3s ease;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .navbar {
+            background: rgba(0, 55, 80, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        body.light-theme .navbar {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .navbar h1 {
+            color: var(--color-accent-primary);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .user-email {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--color-text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background: var(--color-card-background);
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        .text-btn {
+            background: transparent;
+            border: 2px solid var(--color-accent-primary);
+            color: var(--color-accent-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .text-btn:hover {
+            background: var(--color-accent-primary);
+            color: var(--color-background);
+        }
+
+        .section-header {
+            color: var(--color-accent-primary);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .review-card {
+            background: var(--color-card-background);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid var(--color-warn);
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateX(10px);
+            border-left-color: var(--color-accent-primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .review-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .review-card small {
+            color: var(--color-text-secondary);
+        }
+
+        #empty-queue-message {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--color-text-secondary);
+            padding: 40px;
+            background: var(--color-card-background);
+            border-radius: 15px;
+        }
+
+        .pattern-category {
+            margin-bottom: 20px;
+        }
+
+        .pattern-category h3 {
+            background: var(--color-card-background);
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .pattern-category h3:hover {
+            background: #004566;
+        }
+
+        body.light-theme .pattern-category h3:hover {
+            background: #f0f0f0;
+        }
+
+        .pattern-category h3 .arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .pattern-category h3.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        .problem-list {
+            list-style: none;
+            padding-left: 20px;
+            border-left: 2px solid var(--color-border);
+            margin-left: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+
+        .problem-list.open {
+            max-height: 3000px;
+        }
+
+        .problem-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        .problem-item:hover {
+            background: rgba(0, 255, 132, 0.05);
+        }
+
+        .problem-title {
+            flex-grow: 1;
+        }
+
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .difficulty-easy {
+            background: var(--color-success);
+            color: var(--color-background);
+        }
+
+        .difficulty-medium {
+            background: var(--color-warn);
+            color: black;
+        }
+
+        .difficulty-hard {
+            background: var(--color-danger);
+            color: white;
+        }
+
+        .status-icon {
+            font-size: 1.2rem;
+            margin-left: 15px;
+            color: var(--color-accent-primary);
+        }
+
+        .back-btn {
+            background: none;
+            border: 2px solid var(--color-border);
+            color: var(--color-accent-primary);
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-bottom: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--color-accent-primary);
+            color: var(--color-background);
+            transform: translateX(-5px);
+        }
+
+        #article-content {
+            background: var(--color-card-background);
+            padding: 40px;
+            border-radius: 20px;
+            line-height: 1.8;
+            border: 1px solid var(--color-border);
+        }
+
+        #article-content h1,
+        #article-content h2,
+        #article-content h3 {
+            color: var(--color-accent-primary);
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        #article-content p {
+            margin-bottom: 15px;
+            color: var(--color-text-secondary);
+        }
+
+        #article-content a {
+            color: var(--color-accent-link);
+            text-decoration: none;
+        }
+
+        #article-content code {
+            background: var(--color-background);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            color: var(--color-accent-primary);
+        }
+
+        #article-content pre {
+            background: #001a24;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid var(--color-border);
+        }
+
+        #article-content pre code {
+            background: none;
+            color: #f0f0f0;
+            padding: 0;
+        }
+
+        body.light-theme #article-content pre {
+            background: #f8f9fa;
+        }
+
+        body.light-theme #article-content pre code {
+            color: #212529;
+        }
+
+        .srs-controls {
+            margin-top: 40px;
+            padding: 30px;
+            background: var(--color-card-background);
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .srs-controls h3 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .srs-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .srs-btn {
+            flex-grow: 1;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .srs-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .srs-btn.add-schedule {
+            background: var(--color-accent-primary);
+            color: var(--color-background);
+        }
+
+        .srs-btn.again {
+            background: var(--color-danger);
+            color: white;
+        }
+
+        .srs-btn.hard {
+            background: var(--color-warn);
+            color: black;
+        }
+
+        .srs-btn.good {
+            background: var(--color-success);
+            color: var(--color-background);
+        }
+
+        .srs-btn.easy {
+            background: #5555ff;
+            color: white;
+        }
+
+        .auth-container {
+            max-width: 450px;
+            margin: 100px auto;
+            padding: 40px;
+            background: var(--color-card-background);
+            border-radius: 20px;
+            border: 1px solid var(--color-border);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h1 {
+            color: var(--color-accent-primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .auth-header p {
+            color: var(--color-text-secondary);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: var(--color-text-primary);
+            font-weight: 600;
+        }
+
+        .form-group input {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 2px solid var(--color-border);
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--color-accent-primary);
+        }
+
+        .auth-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: var(--color-accent-primary);
+            color: var(--color-background);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 132, 0.3);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .auth-toggle button {
+            background: none;
+            border: none;
+            color: var(--color-accent-primary);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: var(--color-danger);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .success-message {
+            background: var(--color-success);
+            color: var(--color-background);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px;
+            font-size: 1.5rem;
+            color: var(--color-text-secondary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- LOADING PAGE -->
+    <div class="page active" id="loading-page">
+        <div class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+        </div>
+    </div>
+
+    <!-- AUTH PAGE -->
+    <div class="page" id="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Graymatter</h1>
+                <p>Your personal DSA learning companion</p>
+            </div>
+            <div id="auth-message"></div>
+            <form class="auth-form" id="auth-form">
+                <div class="form-group">
+                    <label for="auth-email">Email</label>
+                    <input type="email" id="auth-email" required placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="auth-password">Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••" minlength="6">
+                </div>
+                <button type="submit" class="auth-btn" id="auth-submit-btn">Sign In</button>
+            </form>
+            <div class="auth-toggle">
+                <span id="auth-toggle-text">Don't have an account?</span>
+                <button type="button" id="auth-toggle-btn">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN PAGE -->
+    <div class="page" id="main-page">
+        <nav class="navbar">
+            <h1 onclick="showPage('main-page'); renderAll();">Graymatter</h1>
+            <div class="nav-actions">
+                <span class="user-email" id="user-email"></span>
+                <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+                <button class="text-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+        <div class="container">
+            <div id="review-queue-section">
+                <h2 class="section-header">Your Personal Review Queue</h2>
+                <div id="review-queue-list"></div>
+                <div id="empty-queue-message" style="display: none;">
+                    You have no items due for review. Study a new article below to start! ✅
+                </div>
+            </div>
+
+            <div id="curriculum-section">
+                <h2 class="section-header">DSA Curriculum</h2>
+                <div id="curriculum-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARTICLE PAGE -->
+    <div class="page" id="article-page">
+        <div class="container">
+            <button class="back-btn" onclick="showPage('main-page'); renderAll();"><i class="fas fa-arrow-left"></i> Back to Curriculum</button>
+            <h1 id="article-title" class="section-header"></h1>
+            <div id="article-content"></div>
+            <div class="srs-controls" id="srs-controls-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // ===================================================================================
+        // CONFIGURATION - UPDATE THESE VALUES
+        // ===================================================================================
+        const SUPABASE_URL = '';
+        const SUPABASE_ANON_KEY = '';
+
+        // Your GitHub repository details
+        const GITHUB_USERNAME = 'g-wtham';
+        const GITHUB_REPO = 'graymatter-content';
+        const GITHUB_BRANCH = 'main';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentUser = null;
+        let userRevisionData = {};
+        let problemsCache = {};
+        let categoriesCache = {};
+
+        // ===================================================================================
+        // GITHUB CONTENT FETCHING
+        // ===================================================================================
+
+        async function fetchGitHubContent(path) {
+            const url = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`;
+            const response = await fetch(url);
+            if (!response.ok) return null;
+            return await response.json();
+        }
+
+        async function fetchMarkdownFile(path) {
+            const content = await fetchGitHubContent(path);
+            if (!content || !content.content) return null;
+            return atob(content.content); // Decode base64
+        }
+
+        function parseFrontmatter(markdown) {
+            const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+            const match = markdown.match(frontmatterRegex);
+            
+            if (!match) return { metadata: {}, content: markdown };
+            
+            const frontmatter = match[1];
+            const content = match[2];
+            const metadata = {};
+            
+            frontmatter.split('\n').forEach(line => {
+                const [key, ...valueParts] = line.split(':');
+                if (key && valueParts.length) {
+                    let value = valueParts.join(':').trim();
+                    // Parse arrays
+                    if (value.startsWith('[') && value.endsWith(']')) {
+                        value = value.slice(1, -1).split(',').map(v => v.trim());
+                    }
+                    metadata[key.trim()] = value;
+                }
+            });
+            
+            return { metadata, content };
+        }
+
+        function extractProblemIdFromFilename(filename) {
+            // Supports: "1-two-sum.md" -> 1, "design-1-twitter.md" -> "design-1"
+            const match = filename.match(/^(\d+|design-\d+|lld-\d+)/);
+            return match ? match[1] : null;
+        }
+
+        function extractTitleFromMarkdown(markdown) {
+            const match = markdown.match(/^#\s+(.+)$/m);
+            return match ? match[1].trim() : 'Untitled';
+        }
+
+        async function syncContentFromGitHub() {
+            console.log('🔄 Syncing content from GitHub...');
+            
+            try {
+                // Fetch folder structure
+                const rootContent = await fetchGitHubContent('');
+                if (!rootContent) {
+                    console.error('Failed to fetch GitHub content');
+                    return;
+                }
+                
+                // Process each folder (category)
+                for (const item of rootContent) {
+                    if (item.type === 'dir') {
+                        const categoryName = item.name;
+                        const files = await fetchGitHubContent(item.path);
+                        
+                        if (!files) continue;
+                        
+                        if (!categoriesCache[categoryName]) {
+                            categoriesCache[categoryName] = [];
+                        }
+                        
+                        // Process each markdown file
+                        for (const file of files) {
+                            if (file.name.endsWith('.md')) {
+                                const problemId = extractProblemIdFromFilename(file.name);
+                                if (!problemId) continue;
+                                
+                                const markdown = await fetchMarkdownFile(file.path);
+                                if (!markdown) continue;
+                                
+                                const { metadata, content } = parseFrontmatter(markdown);
+                                const title = extractTitleFromMarkdown(content);
+                                
+                                problemsCache[problemId] = {
+                                    id: problemId,
+                                    title: title,
+                                    category: metadata.category || categoryName,
+                                    difficulty: metadata.difficulty || 'Medium',
+                                    tags: metadata.tags || [],
+                                    markdown: content,
+                                    metadata: metadata
+                                };
+                                
+                                if (!categoriesCache[categoryName].find(p => p.id === problemId)) {
+                                    categoriesCache[categoryName].push({
+                                        id: problemId,
+                                        title: title
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                console.log('✅ Content synced successfully', problemsCache);
+                renderAll();
+                
+            } catch (error) {
+                console.error('Error syncing content:', error);
+            }
+        }
+
+        // ===================================================================================
+        // AUTHENTICATION
+        // ===================================================================================
+
+        let isSignUp = false;
+
+        async function initAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session) {
+                currentUser = session.user;
+                await loadUserData();
+                await syncContentFromGitHub();
+                showPage('main-page');
+            } else {
+                showPage('auth-page');
+            }
+        }
+
+        document.getElementById('auth-toggle-btn').addEventListener('click', () => {
+            isSignUp = !isSignUp;
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const toggleText = document.getElementById('auth-toggle-text');
+            const toggleBtn = document.getElementById('auth-toggle-btn');
+            
+            if (isSignUp) {
+                submitBtn.textContent = 'Sign Up';
+                toggleText.textContent = 'Already have an account?';
+                toggleBtn.textContent = 'Sign In';
+            } else {
+                submitBtn.textContent = 'Sign In';
+                toggleText.textContent = "Don't have an account?";
+                toggleBtn.textContent = 'Sign Up';
+            }
+            
+            document.getElementById('auth-message').innerHTML = '';
+        });
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const messageDiv = document.getElementById('auth-message');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Loading...';
+            messageDiv.innerHTML = '';
+            
+            try {
+                if (isSignUp) {
+                    const { data, error } = await supabase.auth.signUp({ email, password });
+                    if (error) throw error;
+                    messageDiv.innerHTML = '<div class="success-message">Check your email for confirmation!</div>';
+                } else {
+                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    currentUser = data.user;
+                    await loadUserData();
+                    await syncContentFromGitHub();
+                    showPage('main-page');
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `<div class="error-message">${error.message}</div>`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
+            }
+        });
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            currentUser = null;
+            userRevisionData = {};
+            problemsCache = {};
+            categoriesCache = {};
+            showPage('auth-page');
+        }
+
+        // ===================================================================================
+        // USER DATA MANAGEMENT
+        // ===================================================================================
+
+        async function loadUserData() {
+            if (!currentUser) return;
+            
+            const { data, error } = await supabase
+                .from('user_progress')
+                .select('problem_id, srs_data')
+                .eq('user_id', currentUser.id);
+            
+            if (error) {
+                console.error('Error loading data:', error);
+                return;
+            }
+            
+            userRevisionData = {};
+            data.forEach(item => {
+                userRevisionData[item.problem_id] = {
+                    srsData: item.srs_data
+                };
+            });
+            
+            document.getElementById('user-email').textContent = currentUser.email;
+        }
+
+        async function saveUserData(problemId, srsData) {
+            if (!currentUser) return;
+            
+            const { error } = await supabase
+                .from('user_progress')
+                .upsert({
+                    user_id: currentUser.id,
+                    problem_id: problemId,
+                    srs_data: srsData,
+                    updated_at: new Date().toISOString()
+                });
+            
+            if (error) {
+                console.error('Error saving data:', error);
+            }
+        }
+
+        // ===================================================================================
+        // SPACED REPETITION
+        // ===================================================================================
+
+        class SpacedRepetition {
+            static calculateNextReview(easiness, repetitions, interval, quality) {
+                if (quality < 2) {
+                    return {
+                        easiness,
+                        repetitions: 0,
+                        interval: 1,
+                        nextReview: this.getNextReviewDate(1)
+                    };
+                }
+                let newEasiness = easiness + (0.1 - (3 - quality) * (0.08 + (3 - quality) * 0.02));
+                if (newEasiness < 1.3) newEasiness = 1.3;
+                const newRepetitions = repetitions + 1;
+                let newInterval;
+                if (newRepetitions === 1) newInterval = 1;
+                else if (newRepetitions === 2) newInterval = 6;
+                else newInterval = Math.round(interval * newEasiness);
+                return {
+                    easiness: newEasiness,
+                    repetitions: newRepetitions,
+                    interval: newInterval,
+                    nextReview: this.getNextReviewDate(newInterval)
+                };
+            }
+            static getNextReviewDate(days) {
+                const date = new Date();
+                date.setDate(date.getDate() + days);
+                return date;
+            }
+        }
+
+        // ===================================================================================
+        // RENDERING
+        // ===================================================================================
+
+        function renderAll() {
+            renderCurriculum();
+            renderReviewQueue();
+        }
+
+        function renderReviewQueue() {
+            const queueList = document.getElementById('review-queue-list');
+            const emptyMessage = document.getElementById('empty-queue-message');
+            queueList.innerHTML = '';
+            const now = new Date();
+            
+            const dueItems = Object.entries(userRevisionData)
+                .filter(([id, data]) => {
+                    if (!data.srsData || !problemsCache[id]) return false;
+                    return new Date(data.srsData.nextReview) <= now;
+                })
+                .map(([id, data]) => ({
+                    id,
+                    ...problemsCache[id],
+                    ...data
+                }));
+
+            if (dueItems.length === 0) {
+                emptyMessage.style.display = 'block';
+            } else {
+                emptyMessage.style.display = 'none';
+                dueItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'review-card';
+                    card.innerHTML = `
+                        <div>
+                            <h3>${item.id}. ${item.title}</h3>
+                            <small>Due for your review</small>
+                        </div>
+                    `;
+                    card.onclick = () => viewArticle(item.id);
+                    queueList.appendChild(card);
+                });
+            }
+        }
+
+        function renderCurriculum() {
+            const curriculumList = document.getElementById('curriculum-list');
+            curriculumList.innerHTML = '';
+            
+            for (const category in categoriesCache) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'pattern-category';
+                const title = document.createElement('h3');
+                title.innerHTML = `${category} <span class="arrow">▼</span>`;
+                const problemList = document.createElement('ul');
+                problemList.className = 'problem-list';
+                title.onclick = () => {
+                    title.classList.toggle('open');
+                    problemList.classList.toggle('open');
+                };
+                
+                categoriesCache[category].forEach(problem => {
+                    const problemData = problemsCache[problem.id];
+                    if (problemData) {
+                        const problemItem = document.createElement('li');
+                        problemItem.className = 'problem-item';
+                        problemItem.onclick = () => viewArticle(problem.id);
+                        const isInSchedule = !!userRevisionData[problem.id];
+                        
+                        const difficultyClass = problemData.difficulty ? 
+                            `difficulty-${problemData.difficulty.toLowerCase()}` : '';
+                        
+                        problemItem.innerHTML = `
+                            <span class="problem-title">
+                                ${problem.id}. ${problem.title}
+                                ${problemData.difficulty ? `<span class="difficulty-badge ${difficultyClass}">${problemData.difficulty}</span>` : ''}
+                            </span>
+                            <span class="status-icon">${isInSchedule ? '✓ In Schedule' : ''}</span>
+                        `;
+                        problemList.appendChild(problemItem);
+                    }
+                });
+                
+                categoryDiv.appendChild(title);
+                categoryDiv.appendChild(problemList);
+                curriculumList.appendChild(categoryDiv);
+            }
+        }
+
+        function viewArticle(problemId) {
+            const article = problemsCache[problemId];
+            if (!article) return;
+
+            document.getElementById('article-title').textContent = `${problemId}. ${article.title}`;
+            document.getElementById('article-content').innerHTML = marked.parse(article.markdown);
+
+            const srsContainer = document.getElementById('srs-controls-container');
+            const userHasItem = !!userRevisionData[problemId];
+
+            if (userHasItem) {
+                srsContainer.innerHTML = `
+                <h3>How well did you recall this?</h3>
+                <div class="srs-buttons">
+                    <button class="srs-btn again" onclick="handleSrsFeedback('${problemId}', 0)">Again</button>
+                    <button class="srs-btn hard" onclick="handleSrsFeedback('${problemId}', 1)">Hard</button>
+                    <button class="srs-btn good" onclick="handleSrsFeedback('${problemId}', 2)">Good</button>
+                    <button class="srs-btn easy" onclick="handleSrsFeedback('${problemId}', 3)">Easy</button>
+                </div>
+            `;
+            } else {
+                srsContainer.innerHTML = `
+                <h3>Master this concept.</h3>
+                <div class="srs-buttons">
+                    <button class="srs-btn add-schedule" onclick="addToSchedule('${problemId}')">
+                        <i class="fas fa-plus-circle"></i> Add to My Revision Schedule
+                    </button>
+                </div>
+            `;
+            }
+            showPage('article-page');
+        }
+
+        async function addToSchedule(problemId) {
+            if (userRevisionData[problemId]) return;
+            
+            const srsData = {
+                easiness: 2.5,
+                repetitions: 0,
+                interval: 1,
+                nextReview: SpacedRepetition.getNextReviewDate(1)
+            };
+            
+            userRevisionData[problemId] = { srsData };
+            await saveUserData(problemId, srsData);
+            viewArticle(problemId);
+        }
+
+        async function handleSrsFeedback(problemId, quality) {
+            const item = userRevisionData[problemId];
+            if (!item) return;
+            
+            const newSrsData = SpacedRepetition.calculateNextReview(
+                item.srsData.easiness,
+                item.srsData.repetitions,
+                item.srsData.interval,
+                quality
+            );
+            
+            userRevisionData[problemId].srsData = newSrsData;
+            await saveUserData(problemId, newSrsData);
+            showPage('main-page');
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('graymatterTheme', isLight ? 'light' : 'dark');
+            document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('graymatterTheme') || 'dark';
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                const themeBtn = document.getElementById('theme-toggle');
+                if (themeBtn) themeBtn.textContent = '☀️';
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadTheme();
+            await initAuth();
+        });
+
+        // Listen for auth changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                currentUser = session.user;
+                loadUserData();
+                syncContentFromGitHub();
+            } else if (event === 'SIGNED_OUT') {
+                currentUser = null;
+                userRevisionData = {};
+                problemsCache = {};
+                categoriesCache = {};
+                showPage('auth-page');
+            }
+        });
+    </script>
+</body>
+
+</html>
